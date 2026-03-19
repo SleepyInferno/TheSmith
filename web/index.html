@@ -44,6 +44,14 @@
             <button class="btn-primary" id="upload-btn">Analyze</button>
         </div>
 
+        <div class="upload-area intune-upload-area" id="intune-upload-area">
+            <h3>Upload Intune Device Export</h3>
+            <p>Optional. Upload an Intune device compliance CSV to correlate devices with foreign sign-in events.</p>
+            <input type="file" id="intune-file-input" accept=".csv">
+            <br>
+            <button class="btn-primary" id="intune-upload-btn">Correlate Devices</button>
+        </div>
+
         <div class="status-banner" id="status-banner"></div>
 
         <div id="loading-skeleton" style="display:none">
@@ -116,8 +124,9 @@
             </div>
 
             <div id="section-events">
-                <div class="section-header">
+                <div class="section-header with-action">
                     <h2 class="text-heading">All Events</h2>
+                    <button class="btn-primary" id="export-csv-btn" style="display:none">Export CSV</button>
                 </div>
                 <div class="filter-bar" id="filter-bar">
                     <input type="text" id="filter-search" placeholder="Search user or IP...">
@@ -145,6 +154,9 @@
                                 <th class="sortable" data-column="clientAppUsed">Protocol</th>
                                 <th class="sortable" data-column="signInStatus">Status</th>
                                 <th class="sortable" data-column="riskLevel">Risk Level</th>
+                                <th class="sortable" data-column="deviceName">Device</th>
+                                <th class="sortable" data-column="deviceOS">OS</th>
+                                <th class="sortable" data-column="complianceState">Compliance</th>
                             </tr>
                         </thead>
                         <tbody id="events-body"></tbody>

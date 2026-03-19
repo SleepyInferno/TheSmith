@@ -50,6 +50,7 @@ function getCountryName(code) {
 
 var allResults = [];
 var metadata = null;
+var intuneLoaded = false;
 var filterState = { search: '', country: '', status: '', dateFrom: '', dateTo: '' };
 var sortState = { column: 'timestamp', direction: 'desc' };
 
@@ -145,6 +146,8 @@ function uploadFile() {
             renderDashboard();
             document.getElementById('results-container').classList.add('visible');
             collapseUploadArea();
+            document.getElementById('intune-upload-area').classList.add('visible');
+            document.getElementById('export-csv-btn').style.display = '';
             document.getElementById('jump-bar').classList.add('visible');
             initJumpBar();
 
@@ -218,8 +221,121 @@ function restoreUploadArea() {
     statusBanner.className = 'status-banner';
     statusBanner.textContent = '';
 
+    // Reset Intune upload area
+    var intuneArea = document.getElementById('intune-upload-area');
+    if (intuneArea) {
+        intuneArea.classList.remove('visible', 'collapsed');
+        intuneArea.innerHTML = '<h3>Upload Intune Device Export</h3>' +
+            '<p>Optional. Upload an Intune device compliance CSV to correlate devices with foreign sign-in events.</p>' +
+            '<input type="file" id="intune-file-input" accept=".csv">' +
+            '<br>' +
+            '<button class="btn-primary" id="intune-upload-btn">Correlate Devices</button>';
+    }
+    intuneLoaded = false;
+    document.getElementById('export-csv-btn').style.display = 'none';
+
     // Re-bind upload button
     document.getElementById('upload-btn').addEventListener('click', uploadFile);
+    document.getElementById('intune-upload-btn').addEventListener('click', uploadIntuneFile);
+}
+
+/* ==================== Intune Upload Flow ==================== */
+
+function uploadIntuneFile() {
+    var fileInput = document.getElementById('intune-file-input');
+    var uploadBtn = document.getElementById('intune-upload-btn');
+    var statusBanner = document.getElementById('status-banner');
+
+    if (!fileInput || !fileInput.files.length) {
+        alert('Please select an Intune CSV file first.');
+        return;
+    }
+
+    uploadBtn.disabled = true;
+    statusBanner.className = 'status-banner processing';
+    statusBanner.textContent = 'Processing Intune device data...';
+
+    var formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    fetch('/upload-intune', { method: 'POST', body: formData })
+        .then(function(res) {
+            return res.json().then(function(data) {
+                if (!res.ok) throw new Error(data.error || 'Intune upload failed');
+                return data;
+            });
+        })
+        .then(function(data) {
+            allResults = data.results || [];
+            intuneLoaded = true;
+
+            // Collapse Intune upload area
+            var intuneArea = document.getElementById('intune-upload-area');
+            var deviceCount = data.intuneData ? data.intuneData.deviceCount : 0;
+            intuneArea.classList.add('collapsed');
+            intuneArea.innerHTML = '<span>' + deviceCount + ' devices loaded from Intune export</span>';
+
+            // Re-render tables with device data
+            var userData = aggregateByUser(allResults);
+            renderUserRollup(userData);
+            renderEventsTable();
+
+            statusBanner.className = 'status-banner complete';
+            var correlatedUsers = data.intuneData ? data.intuneData.correlatedUsers : 0;
+            statusBanner.textContent = 'Intune data loaded. ' + deviceCount + ' devices correlated across ' + correlatedUsers + ' users.';
+        })
+        .catch(function(err) {
+            statusBanner.className = 'status-banner error';
+            statusBanner.textContent = err.message.indexOf('Unrecognized') !== -1
+                ? 'Unrecognized CSV format. Expected an Intune device compliance export with columns like Device name, UPN, and Compliance.'
+                : 'Failed to process Intune file. Check that the file is a valid CSV and try again.';
+        })
+        .then(function() {
+            var uploadBtn = document.getElementById('intune-upload-btn');
+            if (uploadBtn) uploadBtn.disabled = false;
+        });
+}
+
+/* ==================== Compliance Badge ==================== */
+
+function renderComplianceBadge(state) {
+    if (!state) return '--';
+    var cssClass = 'unknown';
+    if (state === 'Compliant') cssClass = 'compliant';
+    else if (state === 'Non-compliant') cssClass = 'noncompliant';
+    return '<span class="compliance-badge ' + cssClass + '">' + escapeHtml(state) + '</span>';
+}
+
+/* ==================== CSV Export ==================== */
+
+function exportCsv() {
+    var events = getFilteredSortedEvents();
+    var columns = [
+        'userPrincipalName', 'userDisplayName', 'ipAddress', 'country',
+        'city', 'timestamp', 'appDisplayName', 'clientAppUsed',
+        'isLegacyAuth', 'signInStatus', 'errorCode', 'riskLevel',
+        'deviceName', 'deviceOS', 'complianceState'
+    ];
+    var header = columns.join(',');
+    var rows = events.map(function(evt) {
+        return columns.map(function(col) {
+            var val = evt[col];
+            if (val == null) val = '';
+            val = String(val);
+            if (val.indexOf(',') !== -1 || val.indexOf('"') !== -1 || val.indexOf('\n') !== -1) {
+                val = '"' + val.replace(/"/g, '""') + '"';
+            }
+            return val;
+        }).join(',');
+    });
+    var csv = header + '\n' + rows.join('\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'thesmith-foreign-events.csv';
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
 /* ==================== Data Aggregation ==================== */
@@ -409,6 +525,9 @@ function renderUserRollup(userData) {
                 '<td>' + escapeHtml(evt.appDisplayName) + '</td>' +
                 '<td>' + escapeHtml(evt.signInStatus) + '</td>' +
                 '<td>' + protocolCell + '</td>' +
+                '<td>' + escapeHtml(evt.deviceName || '--') + '</td>' +
+                '<td>' + escapeHtml(evt.deviceOS || '--') + '</td>' +
+                '<td>' + renderComplianceBadge(evt.complianceState) + '</td>' +
                 '</tr>';
         }).join('');
 
@@ -416,7 +535,7 @@ function renderUserRollup(userData) {
             '<td colspan="5">' +
             '<table class="sub-table">' +
             '<thead><tr>' +
-            '<th>Timestamp</th><th>IP</th><th>Country</th><th>App</th><th>Status</th><th>Protocol</th>' +
+            '<th>Timestamp</th><th>IP</th><th>Country</th><th>App</th><th>Status</th><th>Protocol</th><th>Device</th><th>OS</th><th>Compliance</th>' +
             '</tr></thead>' +
             '<tbody>' + subRows + '</tbody>' +
             '</table>' +
@@ -528,7 +647,7 @@ function applyFiltersAndSort() {
     var tbody = document.getElementById('events-body');
 
     if (filtered.length === 0 && allResults.length > 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px">No events match the current filters.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px">No events match the current filters.</td></tr>';
     } else {
         tbody.innerHTML = filtered.map(function(evt) {
             var rowClass = evt.isLegacyAuth ? ' class="legacy-row"' : '';
@@ -548,6 +667,9 @@ function applyFiltersAndSort() {
                 '<td>' + protocolCell + '</td>' +
                 '<td>' + escapeHtml(evt.signInStatus) + '</td>' +
                 '<td>' + escapeHtml(evt.riskLevel || '') + '</td>' +
+                '<td>' + escapeHtml(evt.deviceName || '--') + '</td>' +
+                '<td>' + escapeHtml(evt.deviceOS || '--') + '</td>' +
+                '<td>' + renderComplianceBadge(evt.complianceState) + '</td>' +
                 '</tr>';
         }).join('');
     }
@@ -682,4 +804,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initFilters();
     initSort();
     document.getElementById('upload-btn').addEventListener('click', uploadFile);
+    document.getElementById('intune-upload-btn').addEventListener('click', uploadIntuneFile);
+    document.getElementById('export-csv-btn').addEventListener('click', exportCsv);
 });

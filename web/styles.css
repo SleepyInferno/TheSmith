@@ -17,6 +17,9 @@
     --color-processing-surface: #fff3cd;
     --color-error-surface: #f8d7da;
     --color-error-text: #991b1b;
+    --color-compliance-compliant: #16a34a;
+    --color-compliance-noncompliant: #dc2626;
+    --color-compliance-unknown: #6b7280;
 }
 
 [data-theme="dark"] {
@@ -34,6 +37,9 @@
     --color-processing-surface: #78350f;
     --color-error-surface: #7f1d1d;
     --color-error-text: #fca5a5;
+    --color-compliance-compliant: #4ade80;
+    --color-compliance-noncompliant: #f87171;
+    --color-compliance-unknown: #9ca3af;
 }
 
 /* ==================== Base ==================== */
@@ -398,6 +404,61 @@ tbody tr:hover {
     padding: 2px 8px;
     font-size: 12px;
     font-weight: 600;
+}
+
+/* ==================== Compliance Badges ==================== */
+
+.compliance-badge {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.compliance-badge.compliant {
+    background-color: #dcfce7;
+    color: var(--color-compliance-compliant);
+}
+
+.compliance-badge.noncompliant {
+    background-color: #fee2e2;
+    color: var(--color-compliance-noncompliant);
+}
+
+.compliance-badge.unknown {
+    background-color: #f3f4f6;
+    color: var(--color-compliance-unknown);
+}
+
+[data-theme="dark"] .compliance-badge.compliant {
+    background-color: rgba(74, 222, 128, 0.15);
+}
+
+[data-theme="dark"] .compliance-badge.noncompliant {
+    background-color: rgba(248, 113, 113, 0.15);
+}
+
+[data-theme="dark"] .compliance-badge.unknown {
+    background-color: rgba(156, 163, 175, 0.15);
+}
+
+/* ==================== Intune Upload Area ==================== */
+
+.intune-upload-area {
+    display: none;
+}
+
+.intune-upload-area.visible {
+    display: block;
+}
+
+/* ==================== Section Header with Action ==================== */
+
+.section-header.with-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* ==================== Accordion ==================== */
