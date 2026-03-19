@@ -370,7 +370,73 @@ function renderUserBars(data) {
 /* ==================== Stub Functions (Plans 02 and 03) ==================== */
 
 function renderUserRollup(userData) {
-    /* TODO: Plan 02 */
+    var tbody = document.getElementById('user-rollup-body');
+    var html = '';
+
+    userData.forEach(function(user, index) {
+        // Row 1: user summary row
+        var countriesList = user.countries.map(function(c) { return getCountryName(c); }).join(', ');
+        var dateRange = formatTimestamp(user.minDate);
+        if (user.minDate !== user.maxDate) {
+            dateRange += ' - ' + formatTimestamp(user.maxDate);
+        }
+
+        html += '<tr class="user-row" data-user-index="' + index + '">' +
+            '<td><span class="chevron">\u25B6</span></td>' +
+            '<td>' + escapeHtml(user.name) + '</td>' +
+            '<td>' + user.count + '</td>' +
+            '<td>' + escapeHtml(countriesList) + '</td>' +
+            '<td>' + escapeHtml(dateRange) + '</td>' +
+            '</tr>';
+
+        // Row 2: expansion row with sub-table
+        var sortedEvents = user.events.slice().sort(function(a, b) {
+            return a.timestamp > b.timestamp ? -1 : a.timestamp < b.timestamp ? 1 : 0;
+        });
+
+        var subRows = sortedEvents.map(function(evt) {
+            var protocolCell;
+            if (evt.isLegacyAuth) {
+                protocolCell = '<span class="legacy-badge">\u26A0 Legacy Auth</span>';
+            } else {
+                protocolCell = escapeHtml(evt.clientAppUsed);
+            }
+            var rowClass = evt.isLegacyAuth ? ' class="legacy-row"' : '';
+            return '<tr' + rowClass + '>' +
+                '<td>' + formatTimestamp(evt.timestamp) + '</td>' +
+                '<td>' + escapeHtml(evt.ipAddress) + '</td>' +
+                '<td>' + getCountryName(evt.country) + '</td>' +
+                '<td>' + escapeHtml(evt.appDisplayName) + '</td>' +
+                '<td>' + escapeHtml(evt.signInStatus) + '</td>' +
+                '<td>' + protocolCell + '</td>' +
+                '</tr>';
+        }).join('');
+
+        html += '<tr class="expansion-row" data-user-index="' + index + '">' +
+            '<td colspan="5">' +
+            '<table class="sub-table">' +
+            '<thead><tr>' +
+            '<th>Timestamp</th><th>IP</th><th>Country</th><th>App</th><th>Status</th><th>Protocol</th>' +
+            '</tr></thead>' +
+            '<tbody>' + subRows + '</tbody>' +
+            '</table>' +
+            '</td>' +
+            '</tr>';
+    });
+
+    tbody.innerHTML = html;
+
+    // Accordion click handler via event delegation
+    tbody.addEventListener('click', function(e) {
+        var row = e.target.closest('tr.user-row');
+        if (!row) return;
+        var idx = row.getAttribute('data-user-index');
+        var expansionRow = tbody.querySelector('tr.expansion-row[data-user-index="' + idx + '"]');
+        if (expansionRow) {
+            expansionRow.classList.toggle('visible');
+            row.classList.toggle('expanded');
+        }
+    });
 }
 
 function renderEventsTable() {
