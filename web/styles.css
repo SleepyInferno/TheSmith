@@ -1,0 +1,547 @@
+/* TheSmith Design System */
+
+/* ==================== CSS Custom Properties ==================== */
+
+:root {
+    --color-bg: #f5f5f5;
+    --color-surface: #ffffff;
+    --color-secondary: #e8ecf1;
+    --color-accent: #4a90d9;
+    --color-accent-hover: #357abd;
+    --color-warning: #d97706;
+    --color-warning-surface: #fef3c7;
+    --color-text: #1a1a2e;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-success-surface: #d4edda;
+    --color-processing-surface: #fff3cd;
+    --color-error-surface: #f8d7da;
+    --color-error-text: #991b1b;
+}
+
+[data-theme="dark"] {
+    --color-bg: #111827;
+    --color-surface: #1f2937;
+    --color-secondary: #374151;
+    --color-accent: #60a5fa;
+    --color-accent-hover: #3b82f6;
+    --color-warning: #f59e0b;
+    --color-warning-surface: #78350f;
+    --color-text: #f3f4f6;
+    --color-text-secondary: #9ca3af;
+    --color-border: #374151;
+    --color-success-surface: #064e3b;
+    --color-processing-surface: #78350f;
+    --color-error-surface: #7f1d1d;
+    --color-error-text: #fca5a5;
+}
+
+/* ==================== Base ==================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* ==================== Typography ==================== */
+
+.text-display {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.text-heading {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.text-label {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.text-body {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* ==================== Layout ==================== */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.page-header {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: 12px 0;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.page-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.page-header .subtitle {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+/* ==================== Jump Bar ==================== */
+
+.jump-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--color-secondary);
+    border-bottom: 1px solid var(--color-border);
+    padding: 8px 16px;
+    display: none;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.jump-bar.visible {
+    display: flex;
+}
+
+.jump-bar .container {
+    display: flex;
+    gap: 16px;
+}
+
+.jump-bar a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 0;
+}
+
+.jump-bar a.active {
+    color: var(--color-accent);
+    border-bottom: 2px solid var(--color-accent);
+}
+
+/* ==================== Upload Area ==================== */
+
+.upload-area {
+    background-color: var(--color-surface);
+    border: 2px dashed var(--color-border);
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    margin: 24px 0;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.upload-area:hover {
+    border-color: var(--color-accent);
+}
+
+.upload-area.collapsed {
+    padding: 8px 16px;
+    border-style: solid;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.upload-area h3 {
+    margin: 0 0 8px 0;
+}
+
+.upload-area p {
+    margin: 0 0 16px 0;
+    color: var(--color-text-secondary);
+}
+
+.upload-area input[type="file"] {
+    margin: 0 0 16px 0;
+}
+
+/* ==================== Status Banner ==================== */
+
+.status-banner {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 16px 0;
+    display: none;
+    transition: background-color 0.2s;
+}
+
+.status-banner.processing {
+    display: block;
+    background-color: var(--color-processing-surface);
+}
+
+.status-banner.complete {
+    display: block;
+    background-color: var(--color-success-surface);
+}
+
+.status-banner.error {
+    display: block;
+    background-color: var(--color-error-surface);
+    color: var(--color-error-text);
+}
+
+/* ==================== Button ==================== */
+
+.btn-primary {
+    background-color: var(--color-accent);
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-accent-hover);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ==================== Hero Stats ==================== */
+
+.hero-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 32px 0;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 200px;
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    padding: 24px;
+    border: 1px solid var(--color-border);
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.stat-card .text-display {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.stat-card .text-label {
+    display: block;
+    color: var(--color-text-secondary);
+}
+
+/* ==================== Bar List ==================== */
+
+.bar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bar-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+.bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--color-accent);
+    opacity: 0.15;
+    border-radius: 4px;
+}
+
+.bar-label {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+.bar-count {
+    position: relative;
+    z-index: 1;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.bar-toggle {
+    background: none;
+    border: none;
+    color: var(--color-accent);
+    cursor: pointer;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+/* ==================== Section Headers ==================== */
+
+.section-header {
+    position: sticky;
+    top: 44px;
+    background-color: var(--color-bg);
+    padding: 16px 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+/* ==================== Summary Grid ==================== */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.summary-grid h3 {
+    margin: 0 0 12px 0;
+}
+
+/* ==================== Tables ==================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: var(--color-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 16px;
+    text-align: left;
+    border: 1px solid var(--color-border);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+td {
+    padding: 8px 16px;
+    border: 1px solid var(--color-border);
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+tbody tr:hover {
+    background-color: rgba(var(--color-secondary), 0.5);
+}
+
+[data-theme="dark"] tbody tr:hover {
+    background-color: rgba(55, 65, 81, 0.5);
+}
+
+:root tbody tr:hover {
+    background-color: rgba(232, 236, 241, 0.5);
+}
+
+/* ==================== Legacy Auth ==================== */
+
+.legacy-row {
+    border-left: 3px solid var(--color-warning);
+    background-color: var(--color-warning-surface);
+}
+
+.legacy-badge {
+    display: inline-block;
+    background-color: var(--color-warning);
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ==================== Accordion ==================== */
+
+.user-row {
+    cursor: pointer;
+}
+
+.user-row .chevron {
+    display: inline-block;
+    transition: transform 0.2s;
+}
+
+.user-row.expanded .chevron {
+    transform: rotate(90deg);
+}
+
+.expansion-row {
+    display: none;
+}
+
+.expansion-row.visible {
+    display: table-row;
+}
+
+.sub-table {
+    margin-left: 16px;
+}
+
+/* ==================== Filter Bar ==================== */
+
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    background-color: var(--color-surface);
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--color-border);
+    align-items: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.filter-bar input,
+.filter-bar select {
+    padding: 6px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.filter-bar input[type="text"] {
+    width: 240px;
+}
+
+/* ==================== Sort ==================== */
+
+th.sortable {
+    cursor: pointer;
+}
+
+th.sortable:hover {
+    text-decoration: underline;
+}
+
+.sort-arrow {
+    margin-left: 4px;
+}
+
+/* ==================== Theme Toggle ==================== */
+
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--color-text);
+    transition: border-color 0.2s, color 0.2s;
+}
+
+/* ==================== Skeleton Loading ==================== */
+
+@keyframes skeleton-pulse {
+    0%, 100% {
+        background-color: var(--color-secondary);
+    }
+    50% {
+        background-color: var(--color-border);
+    }
+}
+
+.skeleton {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    border-radius: 8px;
+}
+
+.skeleton-card {
+    height: 80px;
+    margin-bottom: 16px;
+}
+
+.skeleton-row {
+    height: 32px;
+    margin-bottom: 8px;
+}
+
+/* ==================== Results Container ==================== */
+
+.results-container {
+    display: none;
+}
+
+.results-container.visible {
+    display: block;
+}
+
+/* ==================== Empty State ==================== */
+
+.empty-state {
+    text-align: center;
+    padding: 48px;
+    color: var(--color-text-secondary);
+}
+
+/* ==================== Table Scroll ==================== */
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+/* ==================== Responsive ==================== */
+
+@media (max-width: 899px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 599px) {
+    .stat-card {
+        min-width: 100%;
+    }
+}
