@@ -9,7 +9,7 @@
 
 - [x] **INGEST-01**: User can load an Entra sign-in log JSON file via the web UI file picker
 - [x] **INGEST-02**: User can load an Entra sign-in log CSV file via the web UI file picker
-- [ ] **INGEST-03**: User can load an Intune device compliance CSV file via the web UI file picker
+- [x] **INGEST-03**: User can load an Intune device compliance CSV file via the web UI file picker
 - [x] **INGEST-04**: Tool detects and warns the user when an Entra export is truncated at 100,000 rows
 - [x] **INGEST-05**: Tool handles files with missing or null IP address fields without crashing
 
@@ -28,7 +28,7 @@
 
 ### Intune Device Correlation
 
-- [ ] **INTUNE-01**: Tool correlates Intune device records to Entra sign-in events via `userPrincipalName`
+- [x] **INTUNE-01**: Tool correlates Intune device records to Entra sign-in events via `userPrincipalName`
 - [ ] **INTUNE-02**: Tool displays device compliance state (Compliant / Non-compliant / Unknown) alongside foreign sign-in events where a device match exists
 - [ ] **INTUNE-03**: Tool shows device name and OS alongside correlated sign-in events
 
@@ -95,7 +95,7 @@
 |-------------|-------|--------|
 | INGEST-01 | Phase 1 | Complete |
 | INGEST-02 | Phase 1 | Complete |
-| INGEST-03 | Phase 3 | Pending |
+| INGEST-03 | Phase 3 | Complete |
 | INGEST-04 | Phase 1 | Complete |
 | INGEST-05 | Phase 1 | Complete |
 | GEO-01 | Phase 1 | Complete |
@@ -105,7 +105,7 @@
 | DETECT-02 | Phase 1 | Complete |
 | DETECT-03 | Phase 1 | Complete |
 | DETECT-04 | Phase 1 | Complete |
-| INTUNE-01 | Phase 3 | Pending |
+| INTUNE-01 | Phase 3 | Complete |
 | INTUNE-02 | Phase 3 | Pending |
 | INTUNE-03 | Phase 3 | Pending |
 | UI-01 | Phase 2 | Complete |
