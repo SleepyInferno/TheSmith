@@ -46,9 +46,9 @@
 
 ### Web UI — Per-Event Detail
 
-- [ ] **UI-07**: Web UI displays a filterable table of all foreign sign-in events with all extracted fields
-- [ ] **UI-08**: User can filter the event table by country, user, date range, or sign-in status
-- [ ] **UI-09**: User can sort the event table by any column
+- [x] **UI-07**: Web UI displays a filterable table of all foreign sign-in events with all extracted fields
+- [x] **UI-08**: User can filter the event table by country, user, date range, or sign-in status
+- [x] **UI-09**: User can sort the event table by any column
 
 ### Export
 
@@ -114,9 +114,9 @@
 | UI-04 | Phase 2 | Complete |
 | UI-05 | Phase 2 | Complete |
 | UI-06 | Phase 2 | Complete |
-| UI-07 | Phase 2 | Pending |
-| UI-08 | Phase 2 | Pending |
-| UI-09 | Phase 2 | Pending |
+| UI-07 | Phase 2 | Complete |
+| UI-08 | Phase 2 | Complete |
+| UI-09 | Phase 2 | Complete |
 | EXPORT-01 | Phase 3 | Pending |
 | EXPORT-02 | Phase 3 | Pending |
 | INFRA-01 | Phase 1 | Complete |

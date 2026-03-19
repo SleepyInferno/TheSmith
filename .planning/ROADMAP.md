@@ -13,7 +13,7 @@ TheSmith delivers a PowerShell-driven security audit tool in three phases. Phase
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Server, Parsing, and Detection Engine** - PowerShell HTTP server that ingests Entra logs, resolves geolocation, and identifies all foreign sign-in events
-- [ ] **Phase 2: Web UI and Dashboard** - Complete browser-based interface with summary stats, per-user rollups, filtering, and sorting
+- [x] **Phase 2: Web UI and Dashboard** - Complete browser-based interface with summary stats, per-user rollups, filtering, and sorting
 - [ ] **Phase 3: Intune Integration and Export** - Intune device file loading, device compliance correlation, and CSV export of all findings
 
 ## Phase Details
@@ -48,9 +48,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Foundation: test fixture, CSS design system, page structure (index.html), upload flow, and summary dashboard (hero stats, country bars, top users)
-- [ ] 02-02-PLAN.md — Per-user rollup table with accordion-expand sub-tables and legacy auth visual treatment
-- [ ] 02-03-PLAN.md — All-events table with filter bar (text search, country, status, date range), column sorting, and visual verification checkpoint
+- [x] 02-01-PLAN.md — Foundation: test fixture, CSS design system, page structure (index.html), upload flow, and summary dashboard (hero stats, country bars, top users)
+- [x] 02-02-PLAN.md — Per-user rollup table with accordion-expand sub-tables and legacy auth visual treatment
+- [x] 02-03-PLAN.md — All-events table with filter bar (text search, country, status, date range), column sorting, and visual verification checkpoint
 
 ### Phase 3: Intune Integration and Export
 **Goal**: An IT admin can load Intune device data, correlate foreign sign-in events with device compliance state, and export a complete CSV report of all findings
@@ -73,5 +73,5 @@ Phases execute in numeric order: 1 -> 2 -> 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Server, Parsing, and Detection Engine | 4/4 | Complete | 2026-03-19 |
-| 2. Web UI and Dashboard | 2/3 | In Progress|  |
+| 2. Web UI and Dashboard | 3/3 | Complete | 2026-03-19 |
 | 3. Intune Integration and Export | 0/1 | Not started | - |
