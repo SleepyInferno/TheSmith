@@ -4,97 +4,158 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TheSmith - Foreign Connection Audit</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f5f5f5; }
-        h1 { color: #1a1a2e; }
-        .upload-area { background: white; border: 2px dashed #ccc; border-radius: 8px; padding: 40px; text-align: center; margin: 20px 0; }
-        .upload-area:hover { border-color: #4a90d9; }
-        input[type="file"] { margin: 10px 0; }
-        button { background: #4a90d9; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #357abd; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        #status { margin: 20px 0; padding: 15px; border-radius: 4px; display: none; }
-        #status.processing { background: #fff3cd; display: block; }
-        #status.complete { background: #d4edda; display: block; }
-        #status.error { background: #f8d7da; display: block; }
-        #results { margin: 20px 0; }
-        pre { background: white; padding: 15px; border-radius: 4px; overflow-x: auto; max-height: 500px; overflow-y: auto; }
-    </style>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('thesmith-theme');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>TheSmith</h1>
-    <p>Foreign Connection Audit Report - Upload an Entra sign-in log file (JSON or CSV) to analyze.</p>
 
-    <div class="upload-area">
-        <h3>Upload Entra Sign-In Log</h3>
-        <input type="file" id="fileInput" accept=".json,.csv">
-        <br>
-        <button id="uploadBtn" onclick="uploadFile()">Analyze</button>
+    <div class="page-header">
+        <div class="container">
+            <div>
+                <h1>TheSmith</h1>
+                <p class="subtitle">Foreign Connection Audit</p>
+            </div>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode"></button>
+        </div>
     </div>
 
-    <div id="status"></div>
-    <div id="results"></div>
+    <div class="jump-bar" id="jump-bar">
+        <div class="container">
+            <a href="#section-summary">Summary</a>
+            <a href="#section-users">Users</a>
+            <a href="#section-events">Events</a>
+        </div>
+    </div>
 
-    <script>
-        async function uploadFile() {
-            var fileInput = document.getElementById('fileInput');
-            var statusDiv = document.getElementById('status');
-            var resultsDiv = document.getElementById('results');
-            var btn = document.getElementById('uploadBtn');
+    <div class="container">
 
-            if (!fileInput.files.length) {
-                alert('Please select a file first.');
-                return;
-            }
+        <div class="upload-area" id="upload-area">
+            <h3>Upload Entra Sign-In Log</h3>
+            <p>Select an Entra sign-in log file (JSON or CSV) to analyze for foreign connections.</p>
+            <input type="file" id="file-input" accept=".json,.csv">
+            <br>
+            <button class="btn-primary" id="upload-btn">Analyze</button>
+        </div>
 
-            btn.disabled = true;
-            statusDiv.className = 'processing';
-            statusDiv.textContent = 'Uploading and processing...';
-            resultsDiv.innerHTML = '';
+        <div class="status-banner" id="status-banner"></div>
 
-            var formData = new FormData();
-            formData.append('file', fileInput.files[0]);
+        <div id="loading-skeleton" style="display:none">
+            <div class="hero-stats">
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+            </div>
+            <div class="skeleton skeleton-row"></div>
+            <div class="skeleton skeleton-row"></div>
+        </div>
 
-            try {
-                var uploadRes = await fetch('/upload', { method: 'POST', body: formData });
-                var uploadData = await uploadRes.json();
+        <div class="empty-state" id="empty-state" style="display:none">
+            <h3>No Foreign Sign-ins Detected</h3>
+            <p>All sign-in events in this log originated from US IP addresses. No further action is needed.</p>
+        </div>
 
-                if (!uploadRes.ok) throw new Error(uploadData.error || 'Upload failed');
+        <div class="results-container" id="results-container">
 
-                // Poll for status
-                var done = false;
-                while (!done) {
-                    await new Promise(function(r) { setTimeout(r, 1000); });
-                    var statusRes = await fetch('/status');
-                    var statusData = await statusRes.json();
+            <div id="section-summary">
+                <div class="section-header">
+                    <h2 class="text-heading">Summary</h2>
+                </div>
+                <div class="hero-stats" id="hero-stats">
+                    <div class="stat-card">
+                        <span class="text-display" id="stat-events"></span>
+                        <span class="text-label">Foreign Events</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="text-display" id="stat-countries"></span>
+                        <span class="text-label">Countries Flagged</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="text-display" id="stat-users"></span>
+                        <span class="text-label">Users Affected</span>
+                    </div>
+                </div>
+                <div class="summary-grid">
+                    <div>
+                        <h3 class="text-heading">Countries</h3>
+                        <ul class="bar-list" id="country-bars"></ul>
+                        <button class="bar-toggle" id="country-toggle" style="display:none"></button>
+                    </div>
+                    <div>
+                        <h3 class="text-heading">Top Users</h3>
+                        <ul class="bar-list" id="user-bars"></ul>
+                        <button class="bar-toggle" id="user-toggle" style="display:none"></button>
+                    </div>
+                </div>
+            </div>
 
-                    if (statusData.status === 'complete') {
-                        done = true;
-                        statusDiv.className = 'complete';
-                        statusDiv.textContent = 'Processing complete!';
+            <div id="section-users">
+                <div class="section-header">
+                    <h2 class="text-heading">Per-User Rollup</h2>
+                </div>
+                <div class="table-scroll">
+                    <table id="user-rollup-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Display Name</th>
+                                <th>Events</th>
+                                <th>Countries</th>
+                                <th>Date Range</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-rollup-body"></tbody>
+                    </table>
+                </div>
+            </div>
 
-                        var resultsRes = await fetch('/results');
-                        var resultsData = await resultsRes.json();
-                        resultsDiv.innerHTML = '<h3>Results</h3><pre>' +
-                            JSON.stringify(resultsData, null, 2) + '</pre>';
-                    } else if (statusData.status === 'error') {
-                        done = true;
-                        throw new Error(statusData.error || 'Processing failed');
-                    } else {
-                        var pct = statusData.totalRows > 0
-                            ? Math.round((statusData.progress / statusData.totalRows) * 100)
-                            : 0;
-                        statusDiv.textContent = 'Processing... ' + statusData.progress +
-                            ' / ' + statusData.totalRows + ' rows (' + pct + '%)';
-                    }
-                }
-            } catch (err) {
-                statusDiv.className = 'error';
-                statusDiv.textContent = 'Error: ' + err.message;
-            } finally {
-                btn.disabled = false;
-            }
-        }
-    </script>
+            <div id="section-events">
+                <div class="section-header">
+                    <h2 class="text-heading">All Events</h2>
+                </div>
+                <div class="filter-bar" id="filter-bar">
+                    <input type="text" id="filter-search" placeholder="Search user or IP...">
+                    <select id="filter-country">
+                        <option value="">All Countries</option>
+                    </select>
+                    <select id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="Success">Success</option>
+                        <option value="Failure">Failure</option>
+                    </select>
+                    <input type="date" id="filter-date-from">
+                    <input type="date" id="filter-date-to">
+                </div>
+                <div class="table-scroll">
+                    <table id="events-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-column="timestamp">Timestamp</th>
+                                <th class="sortable" data-column="userDisplayName">User</th>
+                                <th class="sortable" data-column="ipAddress">IP</th>
+                                <th class="sortable" data-column="country">Country</th>
+                                <th class="sortable" data-column="city">City</th>
+                                <th class="sortable" data-column="appDisplayName">App</th>
+                                <th class="sortable" data-column="clientAppUsed">Protocol</th>
+                                <th class="sortable" data-column="signInStatus">Status</th>
+                                <th class="sortable" data-column="riskLevel">Risk Level</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
