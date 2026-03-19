@@ -1,0 +1,5 @@
+DeviceName,UPN,ComplianceState,OS,OSVersion
+DESKTOP-ABC123,jdoe@contoso.com,Compliant,Windows,10.0.19045
+IPHONE-XYZ789,jdoe@contoso.com,NonCompliant,iOS,16.5
+LAPTOP-DEF456,asmith@contoso.com,Compliant,Windows,10.0.22621
+PIXEL-GHI012,bnewton@contoso.com,InGracePeriod,Android,14.0

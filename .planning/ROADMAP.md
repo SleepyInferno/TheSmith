@@ -60,10 +60,11 @@ Plans:
   1. Admin uploads an Intune device compliance CSV via the web UI file picker, and the tool correlates device records to sign-in events via userPrincipalName
   2. Where a device match exists, the UI displays device name, OS, and compliance state (Compliant / Non-compliant / Unknown) alongside the foreign sign-in event
   3. Admin can export all flagged foreign events as a CSV file containing every extracted field including device compliance state
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — IntuneParser module: Intune CSV parsing (both Graph API and Admin Center formats), UPN-based device correlation, server endpoint, and Pester tests
+- [ ] 03-02-PLAN.md — Intune upload UI, device/compliance columns in tables, compliance badges, CSV export button, and visual verification
 
 ## Progress
 
@@ -74,4 +75,4 @@ Phases execute in numeric order: 1 -> 2 -> 3
 |-------|----------------|--------|-----------|
 | 1. Server, Parsing, and Detection Engine | 4/4 | Complete | 2026-03-19 |
 | 2. Web UI and Dashboard | 3/3 | Complete | 2026-03-19 |
-| 3. Intune Integration and Export | 0/1 | Not started | - |
+| 3. Intune Integration and Export | 0/2 | Not started | - |

@@ -1,0 +1,5 @@
+Device name,User principal name,Compliance,OS,OS version
+DESKTOP-ABC123,jdoe@contoso.com,Compliant,Windows,10.0.19045
+IPHONE-XYZ789,jdoe@contoso.com,Noncompliant,iOS,16.5
+LAPTOP-DEF456,asmith@contoso.com,Compliant,Windows,10.0.22621
+SURFACE-JKL345,cwhite@contoso.com,Unknown,Windows,10.0.19045
