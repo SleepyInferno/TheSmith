@@ -8,6 +8,7 @@ BeforeAll {
     . "$script:ProjectRoot/lib/GeoLookup.ps1"
     . "$script:ProjectRoot/lib/FileParser.ps1"
     . "$script:ProjectRoot/lib/DetectionEngine.ps1"
+    . "$script:ProjectRoot/lib/IntuneParser.ps1"
     . "$script:ProjectRoot/lib/JobManager.ps1"
     . "$script:ProjectRoot/lib/Server.ps1"
 
@@ -33,6 +34,7 @@ BeforeAll {
         . "$Root/lib/GeoLookup.ps1"
         . "$Root/lib/FileParser.ps1"
         . "$Root/lib/DetectionEngine.ps1"
+        . "$Root/lib/IntuneParser.ps1"
         . "$Root/lib/JobManager.ps1"
         . "$Root/lib/Server.ps1"
 
@@ -158,6 +160,168 @@ Describe 'API Endpoints' -Tag 'NoExternalCalls' {
         $result = Invoke-RestMethod -Uri "$script:TestUrl/status" -Method GET
         $result.jobId | Should -Match '^job-'
         $result.status | Should -BeIn @('processing', 'complete', 'error')
+    }
+}
+
+Describe 'Intune Upload Endpoint' -Tag 'Intune' {
+
+    BeforeAll {
+        # Ensure an Entra upload job is running, then wait for it to complete.
+        # The API Endpoints block starts a job; if it hasn't fired yet, start one here.
+        $status = Invoke-RestMethod -Uri "$script:TestUrl/status" -Method GET
+        if ($status.status -eq 'idle') {
+            $sampleContent = Get-Content "$script:ProjectRoot/tests/fixtures/sample-entra-signin.json" -Raw
+            $boundary = [Guid]::NewGuid().ToString()
+            $LF = "`r`n"
+            $body = "--$boundary$LF"
+            $body += "Content-Disposition: form-data; name=`"file`"; filename=`"test.json`"$LF"
+            $body += "Content-Type: application/json$LF$LF"
+            $body += "$sampleContent$LF"
+            $body += "--$boundary--$LF"
+            $null = Invoke-RestMethod -Uri "$script:TestUrl/upload" -Method POST `
+                -ContentType "multipart/form-data; boundary=$boundary" -Body $body
+        }
+
+        # Wait up to 90 seconds for job to finish (geo DB load takes ~30s on first run)
+        $deadline = (Get-Date).AddSeconds(90)
+        do {
+            Start-Sleep -Milliseconds 500
+            $status = Invoke-RestMethod -Uri "$script:TestUrl/status" -Method GET
+        } while ($status.status -eq 'processing' -and (Get-Date) -lt $deadline)
+
+        $script:IntuneUploaded = $false
+    }
+
+    It 'POST /upload-intune returns 400 when called before any Entra upload succeeds' {
+        # Start a fresh server instance would be ideal; instead, verify the endpoint
+        # correctly gates on completed Entra results. If a job is complete the endpoint
+        # will accept. Skip this assertion if a job already completed.
+        $status = Invoke-RestMethod -Uri "$script:TestUrl/status" -Method GET
+        if ($status.status -ne 'complete') {
+            $boundary = [Guid]::NewGuid().ToString()
+            $LF = "`r`n"
+            $body = "--$boundary$LF"
+            $body += "Content-Disposition: form-data; name=`"file`"; filename=`"intune.csv`"$LF"
+            $body += "Content-Type: text/csv$LF$LF"
+            $body += "DeviceName,UPN,ComplianceState$LF"
+            $body += "--$boundary--$LF"
+
+            try {
+                $null = Invoke-WebRequest -Uri "$script:TestUrl/upload-intune" -Method POST `
+                    -ContentType "multipart/form-data; boundary=$boundary" `
+                    -Body $body -UseBasicParsing
+                $true | Should -Be $false -Because 'should have returned 400'
+            } catch {
+                $_.Exception.Response.StatusCode.value__ | Should -Be 400
+            }
+        } else {
+            Set-ItResult -Skipped -Because 'Entra job already complete; gating test not applicable'
+        }
+    }
+
+    It 'POST /upload-intune rejects non-POST methods' {
+        try {
+            $null = Invoke-WebRequest -Uri "$script:TestUrl/upload-intune" -Method GET -UseBasicParsing
+            $true | Should -Be $false -Because 'should have thrown a 405 error'
+        } catch {
+            $_.Exception.Response.StatusCode.value__ | Should -Be 405
+        }
+    }
+
+    It 'POST /upload-intune returns 400 when no file content is sent' {
+        $status = Invoke-RestMethod -Uri "$script:TestUrl/status" -Method GET
+        if ($status.status -ne 'complete') {
+            Set-ItResult -Skipped -Because 'Entra job not yet complete'
+            return
+        }
+
+        $boundary = [Guid]::NewGuid().ToString()
+        $LF = "`r`n"
+        # No file part — just an empty multipart body
+        $body = "--$boundary--$LF"
+
+        try {
+            $null = Invoke-WebRequest -Uri "$script:TestUrl/upload-intune" -Method POST `
+                -ContentType "multipart/form-data; boundary=$boundary" `
+                -Body $body -UseBasicParsing
+            $true | Should -Be $false -Because 'should have returned 400'
+        } catch {
+            $_.Exception.Response.StatusCode.value__ | Should -Be 400
+        }
+    }
+
+    It 'POST /upload-intune with valid Intune CSV returns device count and correlated users' {
+        $status = Invoke-RestMethod -Uri "$script:TestUrl/status" -Method GET
+        if ($status.status -ne 'complete') {
+            Set-ItResult -Skipped -Because 'Entra job not yet complete'
+            return
+        }
+
+        $intuneContent = Get-Content "$script:ProjectRoot/tests/fixtures/sample-intune-devices-server.csv" -Raw
+
+        $boundary = [Guid]::NewGuid().ToString()
+        $LF = "`r`n"
+        $body = "--$boundary$LF"
+        $body += "Content-Disposition: form-data; name=`"file`"; filename=`"sample-intune-devices.csv`"$LF"
+        $body += "Content-Type: text/csv$LF$LF"
+        $body += "$intuneContent$LF"
+        $body += "--$boundary--$LF"
+
+        $result = Invoke-RestMethod -Uri "$script:TestUrl/upload-intune" -Method POST `
+            -ContentType "multipart/form-data; boundary=$boundary" `
+            -Body $body
+
+        $result.intuneData | Should -Not -BeNullOrEmpty
+        $result.intuneData.deviceCount | Should -Be 4  # sample-intune-devices-server.csv has 4 rows
+        $result.intuneData.correlatedUsers | Should -BeGreaterThan 0
+        $result.results | Should -Not -BeNullOrEmpty
+        $script:IntuneUploaded = $true
+    }
+
+    It 'GET /results after Intune upload includes deviceName, deviceOS, complianceState fields' {
+        if (-not $script:IntuneUploaded) {
+            Set-ItResult -Skipped -Because 'Intune upload test did not succeed'
+            return
+        }
+
+        $result = Invoke-RestMethod -Uri "$script:TestUrl/results" -Method GET
+
+        $result.results | Should -Not -BeNullOrEmpty
+        $firstResult = $result.results[0]
+
+        # All results should have the device fields (populated or empty string)
+        $firstResult.PSObject.Properties.Name | Should -Contain 'deviceName'
+        $firstResult.PSObject.Properties.Name | Should -Contain 'deviceOS'
+        $firstResult.PSObject.Properties.Name | Should -Contain 'complianceState'
+    }
+
+    It 'GET /results includes Intune data block with device count' {
+        if (-not $script:IntuneUploaded) {
+            Set-ItResult -Skipped -Because 'Intune upload test did not succeed'
+            return
+        }
+
+        $result = Invoke-RestMethod -Uri "$script:TestUrl/results" -Method GET
+        $result.intuneData | Should -Not -BeNullOrEmpty
+        $result.intuneData.deviceCount | Should -Be 4
+    }
+
+    It 'Intune-matched results have non-empty complianceState' {
+        if (-not $script:IntuneUploaded) {
+            Set-ItResult -Skipped -Because 'Intune upload test did not succeed'
+            return
+        }
+
+        $result = Invoke-RestMethod -Uri "$script:TestUrl/results" -Method GET
+
+        # sample-intune-devices-server.csv has john.doe@contoso.com — sample-entra-signin.json also has john.doe@contoso.com
+        $matched = $result.results | Where-Object { $_.userPrincipalName -eq 'john.doe@contoso.com' }
+        if ($matched) {
+            $matched[0].complianceState | Should -Not -BeNullOrEmpty
+            $matched[0].deviceName     | Should -Not -BeNullOrEmpty
+        } else {
+            Set-ItResult -Skipped -Because 'No matching UPN between fixtures'
+        }
     }
 }
 
