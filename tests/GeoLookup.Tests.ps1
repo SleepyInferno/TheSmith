@@ -29,7 +29,7 @@ Describe 'GeoLookup' {
         It 'converts IPv6 "2001:4860:4860::8888" to a positive decimal' {
             $num = ConvertTo-IPNumber -IpAddress '2001:4860:4860::8888'
             $num | Should -BeGreaterThan 0
-            $num | Should -BeOfType [decimal]
+            $num | Should -BeOfType [bigint]
         }
 
         It 'returns $null for invalid string "not-an-ip"' {
