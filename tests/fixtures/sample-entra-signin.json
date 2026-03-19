@@ -1,0 +1,62 @@
+[
+  {
+    "userPrincipalName": "john.doe@contoso.com",
+    "userDisplayName": "John Doe",
+    "ipAddress": "203.0.113.42",
+    "createdDateTime": "2026-03-18T08:15:00Z",
+    "appDisplayName": "Microsoft Office 365",
+    "clientAppUsed": "Browser",
+    "correlationId": "abc123-001",
+    "status": { "errorCode": 0, "failureReason": "Other." },
+    "location": { "city": "Beijing", "state": "", "countryOrRegion": "CN" },
+    "riskLevelAggregated": "low"
+  },
+  {
+    "userPrincipalName": "jane.smith@contoso.com",
+    "userDisplayName": "Jane Smith",
+    "ipAddress": "8.8.8.8",
+    "createdDateTime": "2026-03-18T09:00:00Z",
+    "appDisplayName": "Azure Portal",
+    "clientAppUsed": "Browser",
+    "correlationId": "abc123-002",
+    "status": { "errorCode": 0, "failureReason": "Other." },
+    "location": { "city": "Mountain View", "state": "CA", "countryOrRegion": "US" },
+    "riskLevelAggregated": "none"
+  },
+  {
+    "userPrincipalName": "bob@contoso.com",
+    "userDisplayName": "Bob Builder",
+    "ipAddress": null,
+    "createdDateTime": "2026-03-18T10:30:00Z",
+    "appDisplayName": "Exchange Online",
+    "clientAppUsed": "IMAP",
+    "correlationId": "abc123-003",
+    "status": { "errorCode": 50126, "failureReason": "Invalid username or password." },
+    "location": { "city": null, "state": null, "countryOrRegion": null },
+    "riskLevelAggregated": "high"
+  },
+  {
+    "userPrincipalName": "alice@contoso.com",
+    "userDisplayName": "Alice Wonder",
+    "ipAddress": "198.51.100.5",
+    "createdDateTime": "2026-03-18T11:00:00Z",
+    "appDisplayName": "Microsoft Teams",
+    "clientAppUsed": "Exchange ActiveSync",
+    "correlationId": "abc123-004",
+    "status": { "errorCode": 0, "failureReason": "Other." },
+    "location": { "city": "Moscow", "state": "", "countryOrRegion": "RU" },
+    "riskLevelAggregated": "medium"
+  },
+  {
+    "userPrincipalName": "charlie@contoso.com",
+    "userDisplayName": "Charlie Chaplin",
+    "ipAddress": "",
+    "createdDateTime": "2026-03-18T12:00:00Z",
+    "appDisplayName": "SharePoint Online",
+    "clientAppUsed": "Browser",
+    "correlationId": "abc123-005",
+    "status": { "errorCode": 0, "failureReason": "Other." },
+    "location": { "city": "London", "state": "", "countryOrRegion": "GB" },
+    "riskLevelAggregated": "none"
+  }
+]

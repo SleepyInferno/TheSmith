@@ -1,0 +1,6 @@
+Date (UTC),User principal name,User display name,IP address,Application,Client app,Correlation ID,Status,Sign-in error code,Failure reason,Location,Risk level (aggregate)
+2026-03-18T08:15:00Z,john.doe@contoso.com,John Doe,203.0.113.42,Microsoft Office 365,Browser,abc123-001,Success,0,Other.,Beijing CN,low
+2026-03-18T09:00:00Z,jane.smith@contoso.com,Jane Smith,8.8.8.8,Azure Portal,Browser,abc123-002,Success,0,Other.,Mountain View US,none
+2026-03-18T10:30:00Z,bob@contoso.com,Bob Builder,,Exchange Online,IMAP,abc123-003,Failure,50126,Invalid username or password.,,high
+2026-03-18T11:00:00Z,alice@contoso.com,Alice Wonder,198.51.100.5,Microsoft Teams,Exchange ActiveSync,abc123-004,Success,0,Other.,Moscow RU,medium
+2026-03-18T12:00:00Z,charlie@contoso.com,Charlie Chaplin,,SharePoint Online,Browser,abc123-005,Success,0,Other.,London GB,none
