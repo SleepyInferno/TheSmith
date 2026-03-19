@@ -440,7 +440,184 @@ function renderUserRollup(userData) {
 }
 
 function renderEventsTable() {
-    /* TODO: Plan 03 */
+    // Populate country dropdown from allResults
+    var countrySelect = document.getElementById('filter-country');
+    var existingValue = countrySelect.value;
+
+    // Remove all options except the first "All Countries"
+    while (countrySelect.options.length > 1) {
+        countrySelect.remove(1);
+    }
+
+    // Collect unique country codes
+    var countryCodes = {};
+    allResults.forEach(function(evt) {
+        if (evt.country) countryCodes[evt.country] = true;
+    });
+
+    // Sort by country name alphabetically and add options
+    Object.keys(countryCodes)
+        .sort(function(a, b) {
+            return getCountryName(a).localeCompare(getCountryName(b));
+        })
+        .forEach(function(code) {
+            var opt = document.createElement('option');
+            opt.value = code;
+            opt.textContent = getCountryName(code);
+            countrySelect.appendChild(opt);
+        });
+
+    // Restore previous selection if still valid
+    countrySelect.value = existingValue;
+
+    // Render table body and sort arrows
+    applyFiltersAndSort();
+}
+
+function getFilteredSortedEvents() {
+    var results = allResults.slice();
+
+    // Apply text search filter
+    if (filterState.search) {
+        var term = filterState.search.toLowerCase();
+        results = results.filter(function(evt) {
+            return (evt.userDisplayName && evt.userDisplayName.toLowerCase().indexOf(term) !== -1) ||
+                   (evt.ipAddress && evt.ipAddress.toLowerCase().indexOf(term) !== -1) ||
+                   (evt.userPrincipalName && evt.userPrincipalName.toLowerCase().indexOf(term) !== -1);
+        });
+    }
+
+    // Apply country filter
+    if (filterState.country) {
+        results = results.filter(function(evt) {
+            return evt.country === filterState.country;
+        });
+    }
+
+    // Apply status filter
+    if (filterState.status) {
+        results = results.filter(function(evt) {
+            return evt.signInStatus === filterState.status;
+        });
+    }
+
+    // Apply date-from filter
+    if (filterState.dateFrom) {
+        results = results.filter(function(evt) {
+            return evt.timestamp >= filterState.dateFrom;
+        });
+    }
+
+    // Apply date-to filter (include the full end day)
+    if (filterState.dateTo) {
+        var endOfDay = filterState.dateTo + 'T23:59:59Z';
+        results = results.filter(function(evt) {
+            return evt.timestamp <= endOfDay;
+        });
+    }
+
+    // Apply sort
+    var comparator = createSortComparator(sortState.column, sortState.direction);
+    results.sort(comparator);
+
+    return results;
+}
+
+function applyFiltersAndSort() {
+    var filtered = getFilteredSortedEvents();
+    var tbody = document.getElementById('events-body');
+
+    if (filtered.length === 0 && allResults.length > 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px">No events match the current filters.</td></tr>';
+    } else {
+        tbody.innerHTML = filtered.map(function(evt) {
+            var rowClass = evt.isLegacyAuth ? ' class="legacy-row"' : '';
+            var protocolCell;
+            if (evt.isLegacyAuth) {
+                protocolCell = '<span class="legacy-badge">\u26A0 Legacy Auth</span>';
+            } else {
+                protocolCell = escapeHtml(evt.clientAppUsed);
+            }
+            return '<tr' + rowClass + '>' +
+                '<td>' + formatTimestamp(evt.timestamp) + '</td>' +
+                '<td>' + escapeHtml(evt.userDisplayName) + '</td>' +
+                '<td>' + escapeHtml(evt.ipAddress) + '</td>' +
+                '<td>' + escapeHtml(getCountryName(evt.country)) + '</td>' +
+                '<td>' + escapeHtml(evt.city || '') + '</td>' +
+                '<td>' + escapeHtml(evt.appDisplayName) + '</td>' +
+                '<td>' + protocolCell + '</td>' +
+                '<td>' + escapeHtml(evt.signInStatus) + '</td>' +
+                '<td>' + escapeHtml(evt.riskLevel || '') + '</td>' +
+                '</tr>';
+        }).join('');
+    }
+
+    // Update sort arrows on column headers
+    var ths = document.querySelectorAll('#events-table thead th');
+    ths.forEach(function(th) {
+        var existing = th.querySelector('.sort-arrow');
+        if (existing) existing.remove();
+
+        var col = th.getAttribute('data-column');
+        if (col && col === sortState.column) {
+            var arrow = document.createElement('span');
+            arrow.className = 'sort-arrow';
+            arrow.textContent = sortState.direction === 'asc' ? '\u2191' : '\u2193';
+            th.appendChild(arrow);
+        }
+    });
+}
+
+function initFilters() {
+    var searchInput = document.getElementById('filter-search');
+    var countrySelect = document.getElementById('filter-country');
+    var statusSelect = document.getElementById('filter-status');
+    var dateFromInput = document.getElementById('filter-date-from');
+    var dateToInput = document.getElementById('filter-date-to');
+
+    searchInput.addEventListener('input', debounce(function() {
+        filterState.search = searchInput.value;
+        applyFiltersAndSort();
+    }, 200));
+
+    countrySelect.addEventListener('change', function() {
+        filterState.country = countrySelect.value;
+        applyFiltersAndSort();
+    });
+
+    statusSelect.addEventListener('change', function() {
+        filterState.status = statusSelect.value;
+        applyFiltersAndSort();
+    });
+
+    dateFromInput.addEventListener('change', function() {
+        filterState.dateFrom = dateFromInput.value;
+        applyFiltersAndSort();
+    });
+
+    dateToInput.addEventListener('change', function() {
+        filterState.dateTo = dateToInput.value;
+        applyFiltersAndSort();
+    });
+}
+
+function initSort() {
+    var headers = document.querySelectorAll('#events-table thead th.sortable');
+    headers.forEach(function(th) {
+        th.addEventListener('click', function() {
+            var col = th.getAttribute('data-column');
+            if (sortState.column === col && sortState.direction === 'asc') {
+                sortState.direction = 'desc';
+            } else if (sortState.column === col && sortState.direction === 'desc') {
+                sortState.column = 'timestamp';
+                sortState.direction = 'desc';
+            } else {
+                sortState.column = col;
+                sortState.direction = 'asc';
+            }
+            applyFiltersAndSort();
+        });
+    });
 }
 
 /* ==================== Jump Bar ==================== */
@@ -502,5 +679,7 @@ function createSortComparator(column, direction) {
 
 document.addEventListener('DOMContentLoaded', function() {
     initThemeToggle();
+    initFilters();
+    initSort();
     document.getElementById('upload-btn').addEventListener('click', uploadFile);
 });
