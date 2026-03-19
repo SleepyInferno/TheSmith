@@ -163,6 +163,109 @@ function Handle-SavedResults {
     Send-JsonResponse -Response $response -Body $responseBody
 }
 
+function Handle-IntuneUpload {
+    <#
+    .SYNOPSIS
+        Handles POST /upload-intune -- parses Intune CSV, correlates with existing Entra results.
+    #>
+    param(
+        $Context,
+        [string]$ScriptRoot
+    )
+
+    $request  = $Context.Request
+    $response = $Context.Response
+
+    if ($request.HttpMethod -ne 'POST') {
+        $errorBody = @{ error = 'Method not allowed. Use POST.' } | ConvertTo-Json
+        Send-JsonResponse -Response $response -Body $errorBody -StatusCode 405
+        return
+    }
+
+    try {
+        # Check that Entra results exist
+        $existingResults = Get-JobResults
+        if ($null -eq $existingResults) {
+            $errorBody = @{ error = 'No Entra sign-in results available. Upload an Entra log file first.' } | ConvertTo-Json
+            Send-JsonResponse -Response $response -Body $errorBody -StatusCode 400
+            return
+        }
+
+        # Parse multipart form-data (same pattern as Handle-Upload)
+        $contentType = $request.ContentType
+        $boundary = ($contentType -replace '.*boundary=', '') -replace '"', ''
+        $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
+        $body = $reader.ReadToEnd()
+        $reader.Close()
+
+        $parts = $body -split "--$([regex]::Escape($boundary))"
+        $fileContent = $null
+
+        foreach ($part in $parts) {
+            if ($part -match 'filename="([^"]+)"') {
+                $headerEnd = $part.IndexOf("`r`n`r`n")
+                if ($headerEnd -ge 0) {
+                    $fileContent = $part.Substring($headerEnd + 4)
+                    $fileContent = $fileContent.TrimEnd("`r`n")
+                }
+                break
+            }
+        }
+
+        if ($null -eq $fileContent -or $fileContent.Length -eq 0) {
+            $errorBody = @{ error = 'No file content found in upload. Please attach a CSV file.' } | ConvertTo-Json
+            Send-JsonResponse -Response $response -Body $errorBody -StatusCode 400
+            return
+        }
+
+        # Parse Intune CSV
+        $devices = Import-IntuneDevices -Content $fileContent
+
+        # Deserialize existing results
+        Add-Type -AssemblyName System.Web.Extensions
+        $serializer = New-Object System.Web.Script.Serialization.JavaScriptSerializer
+        $serializer.MaxJsonLength = [int]::MaxValue
+        $existingData = $serializer.DeserializeObject($existingResults)
+
+        # Convert results back to PSCustomObject array for Merge
+        $resultsArray = @()
+        foreach ($item in $existingData['results']) {
+            $obj = [PSCustomObject]@{}
+            foreach ($key in $item.Keys) {
+                $obj | Add-Member -NotePropertyName $key -NotePropertyValue $item[$key]
+            }
+            $resultsArray += $obj
+        }
+
+        # Correlate
+        $enrichedResults = Merge-IntuneWithResults -Devices $devices -Results $resultsArray
+
+        # Rebuild the full response JSON
+        $enrichedResponse = @{
+            jobId       = $existingData['jobId']
+            status      = $existingData['status']
+            processedAt = $existingData['processedAt']
+            metadata    = $existingData['metadata']
+            results     = $enrichedResults
+            intuneData  = @{
+                deviceCount     = $devices.Count
+                correlatedUsers = ($devices | Select-Object -ExpandProperty userPrincipalName -Unique).Count
+            }
+        }
+
+        $jsonResponse = $enrichedResponse | ConvertTo-Json -Depth 5
+
+        # Update stored results so subsequent /results calls include Intune data
+        Set-EnrichedResults -JsonResults $jsonResponse
+
+        Send-JsonResponse -Response $response -Body $jsonResponse
+    }
+    catch {
+        $errorBody = @{ error = "Failed to process Intune file: $($_.Exception.Message)" } | ConvertTo-Json
+        Send-JsonResponse -Response $response -Body $errorBody -StatusCode 500
+    }
+}
+
 function Handle-StaticFile {
     <#
     .SYNOPSIS
@@ -269,6 +372,7 @@ function Start-Server {
                     '/status'        { Handle-Status $context }
                     '/results'       { Handle-Results $context }
                     '/saved-results' { Handle-SavedResults $context }
+                    '/upload-intune' { Handle-IntuneUpload $context $ScriptRoot }
                     '/shutdown'      { Handle-Shutdown $context $listener }
                     default          { Handle-StaticFile $context $ScriptRoot }
                 }

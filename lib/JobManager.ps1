@@ -190,6 +190,19 @@ function Get-JobResults {
     return $script:CurrentJob.Results
 }
 
+function Set-EnrichedResults {
+    <#
+    .SYNOPSIS
+        Updates stored job results with enriched (Intune-correlated) data.
+    .PARAMETER JsonResults
+        JSON string of enriched results.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$JsonResults
+    )
+    $script:CurrentJob.Results = $JsonResults
+}
+
 function Get-SavedResults {
     <#
     .SYNOPSIS

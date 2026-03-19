@@ -13,6 +13,7 @@ $ScriptRoot = $PSScriptRoot
 . "$ScriptRoot\lib\GeoLookup.ps1"
 . "$ScriptRoot\lib\FileParser.ps1"
 . "$ScriptRoot\lib\DetectionEngine.ps1"
+. "$ScriptRoot\lib\IntuneParser.ps1"
 . "$ScriptRoot\lib\JobManager.ps1"
 . "$ScriptRoot\lib\Server.ps1"
 
