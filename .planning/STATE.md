@@ -1,0 +1,85 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: in-progress
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-19T19:56:00.000Z"
+last_activity: 2026-03-19 -- Completed Dashboard Foundation (02-01)
+progress:
+  total_phases: 3
+  completed_phases: 0
+  total_plans: 7
+  completed_plans: 5
+  percent: 71
+---
+
+# Project State
+
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-03-19)
+
+**Core value:** An IT admin can load Entra and Intune exports, immediately see all non-US activity in a clear web UI, and export a CSV -- without cloud access or manual log grepping.
+**Current focus:** Phase 2: Web UI and Dashboard
+
+## Current Position
+
+Phase: 2 of 3 (Web UI and Dashboard)
+Plan: 1 of 3 in current phase (02-01 complete)
+Status: In Progress
+Last activity: 2026-03-19 -- Completed Dashboard Foundation (02-01)
+
+Progress: [██████░░░░] 71%
+
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 5
+- Average duration: 3min
+- Total execution time: 0.3 hours
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| 01 | 4 | 12min | 3min |
+| 02 | 1 | 4min | 4min |
+
+**Recent Trend:**
+- Last 5 plans: 4min, 3min, 2min, 3min, 4min
+- Trend: -
+
+*Updated after each plan completion*
+
+## Accumulated Context
+
+### Decisions
+
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- Roadmap: 3-phase coarse structure -- foundation pipeline first, then UI, then Intune+export
+- GeoLookup: Used bigint instead of decimal for IPv6 numeric values (decimal overflows at 128-bit)
+- DetectionEngine: countryName set to country code for now; Entra locationCity used as supplementary city data
+- Server: Runspace re-initializes GeoDatabase in background thread (cannot share module-level state across runspaces)
+- Server: binds to localhost only (no admin elevation needed)
+- JobManager: results saved to results/ folder as JSON by job ID
+- UI: Country codes displayed as full names via 40-entry COUNTRY_NAMES lookup in app.js
+- UI: FOUC prevention via inline script in head reading localStorage before paint
+- UI: Jump bar active section tracked via IntersectionObserver
+
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+- Research flags Intune CSV schema may vary by tenant -- validate actual exports before Phase 3 parser build
+- PowerShell 5.1 memory limits require streaming architecture from Phase 1 -- cannot be retrofitted
+
+## Session Continuity
+
+Last session: 2026-03-19T19:56:00.000Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: .planning/phases/02-web-ui-and-dashboard/02-02-PLAN.md
