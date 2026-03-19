@@ -29,8 +29,8 @@
 ### Intune Device Correlation
 
 - [x] **INTUNE-01**: Tool correlates Intune device records to Entra sign-in events via `userPrincipalName`
-- [ ] **INTUNE-02**: Tool displays device compliance state (Compliant / Non-compliant / Unknown) alongside foreign sign-in events where a device match exists
-- [ ] **INTUNE-03**: Tool shows device name and OS alongside correlated sign-in events
+- [x] **INTUNE-02**: Tool displays device compliance state (Compliant / Non-compliant / Unknown) alongside foreign sign-in events where a device match exists
+- [x] **INTUNE-03**: Tool shows device name and OS alongside correlated sign-in events
 
 ### Web UI — Summary Dashboard
 
@@ -52,8 +52,8 @@
 
 ### Export
 
-- [ ] **EXPORT-01**: User can export all flagged foreign events as a CSV file
-- [ ] **EXPORT-02**: CSV export includes all extracted fields: user, IP, country, city, timestamp, app, client app, protocol, status, risk level, device compliance state
+- [x] **EXPORT-01**: User can export all flagged foreign events as a CSV file
+- [x] **EXPORT-02**: CSV export includes all extracted fields: user, IP, country, city, timestamp, app, client app, protocol, status, risk level, device compliance state
 
 ### Infrastructure
 
@@ -106,8 +106,8 @@
 | DETECT-03 | Phase 1 | Complete |
 | DETECT-04 | Phase 1 | Complete |
 | INTUNE-01 | Phase 3 | Complete |
-| INTUNE-02 | Phase 3 | Pending |
-| INTUNE-03 | Phase 3 | Pending |
+| INTUNE-02 | Phase 3 | Complete |
+| INTUNE-03 | Phase 3 | Complete |
 | UI-01 | Phase 2 | Complete |
 | UI-02 | Phase 2 | Complete |
 | UI-03 | Phase 2 | Complete |
@@ -117,8 +117,8 @@
 | UI-07 | Phase 2 | Complete |
 | UI-08 | Phase 2 | Complete |
 | UI-09 | Phase 2 | Complete |
-| EXPORT-01 | Phase 3 | Pending |
-| EXPORT-02 | Phase 3 | Pending |
+| EXPORT-01 | Phase 3 | Complete |
+| EXPORT-02 | Phase 3 | Complete |
 | INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |

@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Server, Parsing, and Detection Engine** - PowerShell HTTP server that ingests Entra logs, resolves geolocation, and identifies all foreign sign-in events
 - [x] **Phase 2: Web UI and Dashboard** - Complete browser-based interface with summary stats, per-user rollups, filtering, and sorting
-- [ ] **Phase 3: Intune Integration and Export** - Intune device file loading, device compliance correlation, and CSV export of all findings
+- [x] **Phase 3: Intune Integration and Export** - Intune device file loading, device compliance correlation, and CSV export of all findings (completed 2026-03-19)
 
 ## Phase Details
 
@@ -63,8 +63,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — IntuneParser module: Intune CSV parsing (both Graph API and Admin Center formats), UPN-based device correlation, server endpoint, and Pester tests
-- [ ] 03-02-PLAN.md — Intune upload UI, device/compliance columns in tables, compliance badges, CSV export button, and visual verification
+- [x] 03-01-PLAN.md — IntuneParser module: Intune CSV parsing (both Graph API and Admin Center formats), UPN-based device correlation, server endpoint, and Pester tests
+- [x] 03-02-PLAN.md — Intune upload UI, device/compliance columns in tables, compliance badges, CSV export button, and visual verification
 
 ## Progress
 
@@ -75,4 +75,4 @@ Phases execute in numeric order: 1 -> 2 -> 3
 |-------|----------------|--------|-----------|
 | 1. Server, Parsing, and Detection Engine | 4/4 | Complete | 2026-03-19 |
 | 2. Web UI and Dashboard | 3/3 | Complete | 2026-03-19 |
-| 3. Intune Integration and Export | 0/2 | Not started | - |
+| 3. Intune Integration and Export | 2/2 | Complete   | 2026-03-19 |
