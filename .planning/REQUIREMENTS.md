@@ -40,9 +40,9 @@
 
 ### Web UI — Per-User Rollup
 
-- [ ] **UI-04**: Web UI groups foreign events by user, showing: user name, total foreign sign-in count, countries seen, date range of activity
-- [ ] **UI-05**: User can expand a per-user row to see that user's individual sign-in events
-- [ ] **UI-06**: Legacy protocol sign-ins are visually distinguished (e.g., badge or highlight) in per-user and event views
+- [x] **UI-04**: Web UI groups foreign events by user, showing: user name, total foreign sign-in count, countries seen, date range of activity
+- [x] **UI-05**: User can expand a per-user row to see that user's individual sign-in events
+- [x] **UI-06**: Legacy protocol sign-ins are visually distinguished (e.g., badge or highlight) in per-user and event views
 
 ### Web UI — Per-Event Detail
 
@@ -111,9 +111,9 @@
 | UI-01 | Phase 2 | Complete |
 | UI-02 | Phase 2 | Complete |
 | UI-03 | Phase 2 | Complete |
-| UI-04 | Phase 2 | Pending |
-| UI-05 | Phase 2 | Pending |
-| UI-06 | Phase 2 | Pending |
+| UI-04 | Phase 2 | Complete |
+| UI-05 | Phase 2 | Complete |
+| UI-06 | Phase 2 | Complete |
 | UI-07 | Phase 2 | Pending |
 | UI-08 | Phase 2 | Pending |
 | UI-09 | Phase 2 | Pending |
