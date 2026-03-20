@@ -73,7 +73,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 04-01-PLAN.md — Add POP3, IMAP4, Authenticated SMTP to LegacyProtocols array with TDD tests
+- [x] 04-01-PLAN.md — Add POP3, IMAP4, Authenticated SMTP to LegacyProtocols array with TDD tests
 
 ### Phase 5: Fix Date-Range Filter for Timezone Offsets
 **Goal:** The all-events date-range filter produces correct results for sign-in timestamps that carry timezone offsets (e.g. `-04:00`), including events near day boundaries
@@ -95,6 +95,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Server, Parsing, and Detection Engine | 4/4 | Complete | 2026-03-19 |
 | 2. Web UI and Dashboard | 3/3 | Complete | 2026-03-19 |
 | 3. Intune Integration and Export | 2/2 | Complete   | 2026-03-19 |
-| 4. Fix POP3 Legacy Protocol Detection | 0/1 | Planned | — |
+| 4. Fix POP3 Legacy Protocol Detection | 1/1 | Complete | 2026-03-20 |
 | 5. Fix Date-Range Filter for Timezone Offsets | 0/0 | Pending | — |
 | 6. Wire Saved-Results and User Filter Dropdown | 0/0 | Pending | — |
