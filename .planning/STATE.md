@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in-progress
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-20T00:43:03Z"
-last_activity: 2026-03-20 -- Completed POP3 Legacy Protocol Detection Fix (04-01)
+status: executing
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-20T03:32:57.921Z"
+last_activity: 2026-03-20 -- Completed Date Range Filter Timezone Fix (05-01)
 progress:
   total_phases: 6
-  completed_phases: 3
-  total_plans: 10
+  completed_phases: 4
+  total_plans: 11
   completed_plans: 10
-  percent: 100
+  percent: 91
 ---
 
 # Project State
@@ -21,23 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-19)
 
 **Core value:** An IT admin can load Entra and Intune exports, immediately see all non-US activity in a clear web UI, and export a CSV -- without cloud access or manual log grepping.
-**Current focus:** Phase 4: Fix POP3 Legacy Protocol Detection
+**Current focus:** Phase 5: Fix Date Range Filter Timezone Offsets
 
 ## Current Position
 
-Phase: 4 of 6 (Fix POP3 Legacy Protocol Detection)
-Plan: 1 of 1 in current phase (04-01 complete)
+Phase: 5 of 6 (Fix Date Range Filter Timezone Offsets)
+Plan: 1 of 1 in current phase (05-01 complete)
 Status: In Progress
-Last activity: 2026-03-20 -- Completed POP3 Legacy Protocol Detection Fix (04-01)
+Last activity: 2026-03-20 -- Completed Date Range Filter Timezone Fix (05-01)
 
-Progress: [██████████] 100%
+Progress: [█████████░] 91%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 3min
-- Total execution time: 0.48 hours
+- Total execution time: 0.51 hours
 
 **By Phase:**
 
@@ -47,9 +47,10 @@ Progress: [██████████] 100%
 | 02 | 3 | 8min | 2.7min |
 | 03 | 2 | 8min | 4min |
 | 04 | 1 | 3min | 3min |
+| 05 | 1 | 2min | 2min |
 
 **Recent Trend:**
-- Last 5 plans: 1min, 3min, 3min, 5min, 3min
+- Last 5 plans: 3min, 3min, 5min, 3min, 2min
 - Trend: -
 
 *Updated after each plan completion*
@@ -78,6 +79,7 @@ Recent decisions affecting current work:
 - UI: Client-side CSV export via Blob API instead of server-side endpoint (respects filter/sort state)
 - UI: Compliance badge colors use CSS custom properties for dark mode support
 - DetectionEngine: No code changes needed outside LegacyProtocols array -- existing -in operator handles expanded list
+- UI: Date filter uses inline Date object epoch comparison rather than adding a helper function
 
 ### Pending Todos
 
@@ -90,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T00:39:37Z
-Stopped at: Completed 04-01-PLAN.md
-Resume file: None -- phase 4 plan 1 complete
+Last session: 2026-03-20T03:32:57.918Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None
