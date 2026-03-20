@@ -17,6 +17,12 @@ BeforeAll {
     $ipv6Fixture = "$PSScriptRoot/fixtures/sample-ip2location-v6.csv"
     $null = Initialize-GeoDatabase -IPv4CsvPath $ipv4Fixture -IPv6CsvPath $ipv6Fixture
 
+    # Clear saved results from previous runs to ensure a clean test environment
+    $resultsDir = "$script:ProjectRoot/results"
+    if (Test-Path $resultsDir) {
+        Get-ChildItem -Path $resultsDir -Filter '*.json' -File | Remove-Item -Force
+    }
+
     # Pick a random high port to avoid conflicts
     $script:TestPort = 18080 + (Get-Random -Minimum 0 -Maximum 1000)
     $script:TestUrl  = "http://localhost:$($script:TestPort)"
