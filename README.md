@@ -2,7 +2,7 @@
 
 TheSmith is a self-contained PowerShell tool for IT administrators to audit Microsoft Entra (Azure AD) sign-in logs for suspicious foreign access. Upload a sign-in log, get a structured interactive report — no cloud services, no external dependencies, no modules to install.
 
-Born out of genuine frustration: after the fifth time manually grepping through a 40,000-row Entra CSV export at 11pm trying to figure out why someone in Shenzhen had authenticated to the tenant, it became clear that a better tool needed to exist. So here we are.
+Built because I got tired of downloading a 40,000-row CSV from Entra, opening it in Excel, and squinting at timestamps trying to figure out if that sign-in from China was the CEO on vacation or something worth losing sleep over. There had to be a better way. Turns out there wasn't one, so I made it.
 
 ---
 
