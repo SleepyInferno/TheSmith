@@ -620,18 +620,19 @@ function getFilteredSortedEvents() {
         });
     }
 
-    // Apply date-from filter
+    // Apply date-from filter (parse to UTC epoch for offset-safe comparison)
     if (filterState.dateFrom) {
+        var fromEpoch = new Date(filterState.dateFrom + 'T00:00:00Z').getTime();
         results = results.filter(function(evt) {
-            return evt.timestamp >= filterState.dateFrom;
+            return new Date(evt.timestamp).getTime() >= fromEpoch;
         });
     }
 
-    // Apply date-to filter (include the full end day)
+    // Apply date-to filter (include the full end day in UTC)
     if (filterState.dateTo) {
-        var endOfDay = filterState.dateTo + 'T23:59:59Z';
+        var toEpoch = new Date(filterState.dateTo + 'T23:59:59.999Z').getTime();
         results = results.filter(function(evt) {
-            return evt.timestamp <= endOfDay;
+            return new Date(evt.timestamp).getTime() <= toEpoch;
         });
     }
 

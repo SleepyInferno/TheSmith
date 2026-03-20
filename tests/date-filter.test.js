@@ -13,18 +13,19 @@ function filterByDate(events, dateFrom, dateTo) {
     var results = events.slice();
 
     // --- BEGIN: date filter logic (mirrors app.js getFilteredSortedEvents) ---
-    // Apply date-from filter
+    // Apply date-from filter (parse to UTC epoch for offset-safe comparison)
     if (dateFrom) {
+        var fromEpoch = new Date(dateFrom + 'T00:00:00Z').getTime();
         results = results.filter(function(evt) {
-            return evt.timestamp >= dateFrom;
+            return new Date(evt.timestamp).getTime() >= fromEpoch;
         });
     }
 
-    // Apply date-to filter (include the full end day)
+    // Apply date-to filter (include the full end day in UTC)
     if (dateTo) {
-        var endOfDay = dateTo + 'T23:59:59Z';
+        var toEpoch = new Date(dateTo + 'T23:59:59.999Z').getTime();
         results = results.filter(function(evt) {
-            return evt.timestamp <= endOfDay;
+            return new Date(evt.timestamp).getTime() <= toEpoch;
         });
     }
     // --- END: date filter logic ---
