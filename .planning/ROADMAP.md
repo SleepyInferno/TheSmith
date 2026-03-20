@@ -79,6 +79,10 @@ Plans:
 **Goal:** The all-events date-range filter produces correct results for sign-in timestamps that carry timezone offsets (e.g. `-04:00`), including events near day boundaries
 **Requirements:** UI-08 (edge case)
 **Gap Closure:** Closes date-range filter flow gap from v1.0 audit — string comparison of offset timestamps against Z-sentinel unreliable near midnight
+**Plans:** 1 plan
+
+Plans:
+- [ ] 05-01-PLAN.md — Replace string-based date comparison with Date object epoch comparison in getFilteredSortedEvents(), add timezone-offset test fixture
 
 ### Phase 6: Wire Saved-Results and User Filter Dropdown
 **Goal:** Admins can reload previously saved result files without re-uploading, and can filter the events table by a specific user via a dedicated dropdown control (not just freetext)
@@ -96,5 +100,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Web UI and Dashboard | 3/3 | Complete | 2026-03-19 |
 | 3. Intune Integration and Export | 2/2 | Complete   | 2026-03-19 |
 | 4. Fix POP3 Legacy Protocol Detection | 1/1 | Complete | 2026-03-20 |
-| 5. Fix Date-Range Filter for Timezone Offsets | 0/0 | Pending | — |
+| 5. Fix Date-Range Filter for Timezone Offsets | 0/1 | Pending | — |
 | 6. Wire Saved-Results and User Filter Dropdown | 0/0 | Pending | — |
