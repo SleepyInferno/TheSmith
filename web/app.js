@@ -51,7 +51,7 @@ function getCountryName(code) {
 var allResults = [];
 var metadata = null;
 var intuneLoaded = false;
-var filterState = { search: '', country: '', status: '', dateFrom: '', dateTo: '' };
+var filterState = { search: '', user: '', country: '', status: '', dateFrom: '', dateTo: '' };
 var sortState = { column: 'timestamp', direction: 'desc' };
 
 /* ==================== Theme Toggle ==================== */
@@ -663,6 +663,34 @@ function renderEventsTable() {
     // Restore previous selection if still valid
     countrySelect.value = existingValue;
 
+    // Populate user dropdown from allResults
+    var userSelect = document.getElementById('filter-user');
+    var existingUserValue = userSelect.value;
+
+    // Remove all options except the first "All Users"
+    while (userSelect.options.length > 1) {
+        userSelect.remove(1);
+    }
+
+    // Collect unique display names
+    var userNames = {};
+    allResults.forEach(function(evt) {
+        if (evt.userDisplayName) userNames[evt.userDisplayName] = true;
+    });
+
+    // Sort alphabetically and add options
+    Object.keys(userNames)
+        .sort(function(a, b) { return a.localeCompare(b); })
+        .forEach(function(name) {
+            var opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            userSelect.appendChild(opt);
+        });
+
+    // Restore previous selection if still valid
+    userSelect.value = existingUserValue;
+
     // Render table body and sort arrows
     applyFiltersAndSort();
 }
@@ -677,6 +705,13 @@ function getFilteredSortedEvents() {
             return (evt.userDisplayName && evt.userDisplayName.toLowerCase().indexOf(term) !== -1) ||
                    (evt.ipAddress && evt.ipAddress.toLowerCase().indexOf(term) !== -1) ||
                    (evt.userPrincipalName && evt.userPrincipalName.toLowerCase().indexOf(term) !== -1);
+        });
+    }
+
+    // Apply user filter
+    if (filterState.user) {
+        results = results.filter(function(evt) {
+            return evt.userDisplayName === filterState.user;
         });
     }
 
@@ -776,6 +811,12 @@ function initFilters() {
         filterState.search = searchInput.value;
         applyFiltersAndSort();
     }, 200));
+
+    var userSelect = document.getElementById('filter-user');
+    userSelect.addEventListener('change', function() {
+        filterState.user = userSelect.value;
+        applyFiltersAndSort();
+    });
 
     countrySelect.addEventListener('change', function() {
         filterState.country = countrySelect.value;
