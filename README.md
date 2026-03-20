@@ -177,6 +177,7 @@ A minimal HTTP server built on `System.Net.HttpListener`. Routes:
 | `POST` | `/upload` | Accepts Entra log file, starts processing job |
 | `GET` | `/results` | Returns completed job results as JSON |
 | `GET` | `/saved-results` | Lists previously saved result files |
+| `GET` | `/load-result` | Returns content of a saved result file by `?name=` |
 | `POST` | `/upload-intune` | Accepts Intune CSV, correlates with current results |
 | `GET` | `/shutdown` | Gracefully stops the server |
 
@@ -184,13 +185,17 @@ A minimal HTTP server built on `System.Net.HttpListener`. Routes:
 
 ## Running Tests
 
-Requires [Pester](https://pester.dev/) v5 (included with recent Windows or installable via `Install-Module Pester`).
+Requires [Pester](https://pester.dev/) v5. Windows ships with Pester 3.x by default — install v5 first:
+
+```powershell
+Install-Module Pester -Force -SkipPublisherCheck
+```
 
 ```powershell
 Invoke-Pester -Path ./tests/ -Output Detailed
 ```
 
-**109 tests** covering all modules:
+**111 tests** covering all modules:
 
 | File | Coverage |
 |------|----------|
