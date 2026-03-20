@@ -163,6 +163,53 @@ function Handle-SavedResults {
     Send-JsonResponse -Response $response -Body $responseBody
 }
 
+function Handle-LoadResult {
+    <#
+    .SYNOPSIS
+        Handles GET /load-result -- returns the content of a saved result file by name.
+    #>
+    param($Context)
+
+    $response = $Context.Response
+
+    # Parse query string manually (PowerShell 5.1 may not have System.Web loaded)
+    $queryString = $Context.Request.Url.Query.TrimStart('?')
+    $name = $null
+    foreach ($pair in $queryString -split '&') {
+        $parts = $pair -split '=', 2
+        if ($parts[0] -eq 'name' -and $parts.Count -eq 2) {
+            $name = [Uri]::UnescapeDataString($parts[1])
+        }
+    }
+
+    # Validate name parameter
+    if ([string]::IsNullOrEmpty($name)) {
+        $errorBody = @{ error = "Missing 'name' query parameter" } | ConvertTo-Json
+        Send-JsonResponse -Response $response -Body $errorBody -StatusCode 400
+        return
+    }
+
+    # Validate no path traversal
+    if ($name -match '\.\.' -or $name -match '[/\\]') {
+        $errorBody = @{ error = "Invalid file name" } | ConvertTo-Json
+        Send-JsonResponse -Response $response -Body $errorBody -StatusCode 400
+        return
+    }
+
+    # Construct file path
+    $projectRoot = Split-Path -Parent $PSScriptRoot
+    $filePath = Join-Path (Join-Path $projectRoot 'results') $name
+
+    if (-not (Test-Path $filePath)) {
+        $errorBody = @{ error = "Result file not found" } | ConvertTo-Json
+        Send-JsonResponse -Response $response -Body $errorBody -StatusCode 404
+        return
+    }
+
+    $content = Get-Content -Path $filePath -Raw -Encoding UTF8
+    Send-JsonResponse -Response $response -Body $content
+}
+
 function Handle-IntuneUpload {
     <#
     .SYNOPSIS
@@ -372,6 +419,7 @@ function Start-Server {
                     '/status'        { Handle-Status $context }
                     '/results'       { Handle-Results $context }
                     '/saved-results' { Handle-SavedResults $context }
+                    '/load-result'   { Handle-LoadResult $context }
                     '/upload-intune' { Handle-IntuneUpload $context $ScriptRoot }
                     '/shutdown'      { Handle-Shutdown $context $listener }
                     default          { Handle-StaticFile $context $ScriptRoot }

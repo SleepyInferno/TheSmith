@@ -239,6 +239,80 @@ function restoreUploadArea() {
     document.getElementById('intune-upload-btn').addEventListener('click', uploadIntuneFile);
 }
 
+/* ==================== Saved Results ==================== */
+
+function loadSavedResultsList() {
+    fetch('/saved-results')
+        .then(function(res) { return res.json(); })
+        .then(function(files) {
+            var panel = document.getElementById('saved-results-panel');
+            var list = document.getElementById('saved-results-list');
+            if (!files || files.length === 0) {
+                panel.style.display = 'none';
+                return;
+            }
+            panel.style.display = '';
+            list.innerHTML = files.map(function(f) {
+                var dateStr = new Date(f.date).toLocaleString();
+                return '<li><a href="#" class="saved-result-link" data-name="' + escapeHtml(f.name) + '">' +
+                    escapeHtml(f.name) + '</a> <span class="saved-result-meta">' + dateStr + ' (' + f.sizeKB + ' KB)</span></li>';
+            }).join('');
+            // Event delegation for clicks
+            list.onclick = function(e) {
+                var link = e.target.closest('.saved-result-link');
+                if (!link) return;
+                e.preventDefault();
+                loadSavedResult(link.getAttribute('data-name'));
+            };
+        })
+        .catch(function() { /* silently fail */ });
+}
+
+function loadSavedResult(name) {
+    var statusBanner = document.getElementById('status-banner');
+    statusBanner.className = 'status-banner processing';
+    statusBanner.textContent = 'Loading saved results...';
+    document.getElementById('loading-skeleton').style.display = 'block';
+    document.getElementById('results-container').classList.remove('visible');
+
+    fetch('/load-result?name=' + encodeURIComponent(name))
+        .then(function(res) {
+            return res.json().then(function(data) {
+                if (!res.ok) throw new Error(data.error || 'Failed to load result');
+                return data;
+            });
+        })
+        .then(function(data) {
+            document.getElementById('loading-skeleton').style.display = 'none';
+            allResults = data.results || [];
+            metadata = data.metadata || {};
+
+            if (allResults.length === 0) {
+                document.getElementById('empty-state').style.display = 'block';
+                document.getElementById('results-container').classList.remove('visible');
+                statusBanner.className = 'status-banner complete';
+                statusBanner.textContent = 'Loaded saved results \u2014 0 foreign sign-in events.';
+                return;
+            }
+
+            renderDashboard();
+            document.getElementById('results-container').classList.add('visible');
+            collapseUploadArea();
+            document.getElementById('intune-upload-area').classList.add('visible');
+            document.getElementById('export-csv-btn').style.display = '';
+            document.getElementById('jump-bar').classList.add('visible');
+            initJumpBar();
+
+            statusBanner.className = 'status-banner complete';
+            statusBanner.textContent = 'Loaded saved results \u2014 ' + metadata.foreignEvents + ' foreign sign-in events.';
+        })
+        .catch(function(err) {
+            document.getElementById('loading-skeleton').style.display = 'none';
+            statusBanner.className = 'status-banner error';
+            statusBanner.textContent = 'Failed to load saved results \u2014 ' + err.message;
+        });
+}
+
 /* ==================== Intune Upload Flow ==================== */
 
 function uploadIntuneFile() {
@@ -807,4 +881,5 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('upload-btn').addEventListener('click', uploadFile);
     document.getElementById('intune-upload-btn').addEventListener('click', uploadIntuneFile);
     document.getElementById('export-csv-btn').addEventListener('click', exportCsv);
+    loadSavedResultsList();
 });

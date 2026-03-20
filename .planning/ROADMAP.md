@@ -88,6 +88,10 @@ Plans:
 **Goal:** Admins can reload previously saved result files without re-uploading, and can filter the events table by a specific user via a dedicated dropdown control (not just freetext)
 **Requirements:** (no new requirements — integration polish and UI enhancement)
 **Gap Closure:** Closes two integration gaps from v1.0 audit — GET /saved-results endpoint unreachable, no dedicated user filter control
+**Plans:** 1 plan
+
+Plans:
+- [ ] 06-01-PLAN.md — Add GET /load-result endpoint, wire saved-results panel to UI, add user filter dropdown to events table filter bar
 
 ## Progress
 
@@ -101,4 +105,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Intune Integration and Export | 2/2 | Complete   | 2026-03-19 |
 | 4. Fix POP3 Legacy Protocol Detection | 1/1 | Complete | 2026-03-20 |
 | 5. Fix Date-Range Filter for Timezone Offsets | 0/1 | Pending | — |
-| 6. Wire Saved-Results and User Filter Dropdown | 0/0 | Pending | — |
+| 6. Wire Saved-Results and User Filter Dropdown | 0/1 | Pending | — |

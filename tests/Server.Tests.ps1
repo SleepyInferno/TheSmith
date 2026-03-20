@@ -129,6 +129,24 @@ Describe 'API Endpoints' -Tag 'NoExternalCalls' {
         }
     }
 
+    It 'GET /load-result without name returns 400' {
+        try {
+            Invoke-RestMethod -Uri "$script:TestUrl/load-result" -Method GET -ErrorAction Stop
+            throw "Should have failed"
+        } catch {
+            $_.Exception.Response.StatusCode.value__ | Should -Be 400
+        }
+    }
+
+    It 'GET /load-result with nonexistent file returns 404' {
+        try {
+            Invoke-RestMethod -Uri "$script:TestUrl/load-result?name=nonexistent.json" -Method GET -ErrorAction Stop
+            throw "Should have failed"
+        } catch {
+            $_.Exception.Response.StatusCode.value__ | Should -Be 404
+        }
+    }
+
     It 'POST /upload with valid JSON file starts processing' {
         # Create sample Entra sign-in JSON content
         $sampleContent = Get-Content "$script:ProjectRoot/tests/fixtures/sample-entra-signin.json" -Raw
