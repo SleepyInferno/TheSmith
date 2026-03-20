@@ -4,8 +4,11 @@
 $script:LegacyProtocols = @(
     'Exchange ActiveSync'
     'IMAP'
+    'IMAP4'
     'POP'
+    'POP3'
     'SMTP'
+    'Authenticated SMTP'
     'MAPI'
     'Autodiscover'
     'Exchange Web Services'
