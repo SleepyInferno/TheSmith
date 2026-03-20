@@ -23,7 +23,7 @@
 
 - [x] **DETECT-01**: Tool identifies all sign-in events from non-US IP addresses
 - [x] **DETECT-02**: Tool deduplicates sign-in events by `correlationId` to avoid counting MFA/CA retry events multiple times
-- [x] **DETECT-03**: Tool flags sign-ins using legacy protocols (IMAP, POP3, SMTP, ActiveSync, Exchange ActiveSync) from foreign IPs as high-risk
+- [ ] **DETECT-03**: Tool flags sign-ins using legacy protocols (IMAP, POP3, SMTP, ActiveSync, Exchange ActiveSync) from foreign IPs as high-risk
 - [x] **DETECT-04**: Tool extracts and displays: user principal name, display name, IP address, resolved country, city, sign-in timestamp, app accessed, client app used, sign-in status (success/failure), risk level
 
 ### Intune Device Correlation
@@ -42,7 +42,7 @@
 
 - [x] **UI-04**: Web UI groups foreign events by user, showing: user name, total foreign sign-in count, countries seen, date range of activity
 - [x] **UI-05**: User can expand a per-user row to see that user's individual sign-in events
-- [x] **UI-06**: Legacy protocol sign-ins are visually distinguished (e.g., badge or highlight) in per-user and event views
+- [ ] **UI-06**: Legacy protocol sign-ins are visually distinguished (e.g., badge or highlight) in per-user and event views
 
 ### Web UI — Per-Event Detail
 
@@ -103,7 +103,7 @@
 | GEO-03 | Phase 1 | Complete |
 | DETECT-01 | Phase 1 | Complete |
 | DETECT-02 | Phase 1 | Complete |
-| DETECT-03 | Phase 1 | Complete |
+| DETECT-03 | Phase 4 | Pending |
 | DETECT-04 | Phase 1 | Complete |
 | INTUNE-01 | Phase 3 | Complete |
 | INTUNE-02 | Phase 3 | Complete |
@@ -113,7 +113,7 @@
 | UI-03 | Phase 2 | Complete |
 | UI-04 | Phase 2 | Complete |
 | UI-05 | Phase 2 | Complete |
-| UI-06 | Phase 2 | Complete |
+| UI-06 | Phase 4 | Pending |
 | UI-07 | Phase 2 | Complete |
 | UI-08 | Phase 2 | Complete |
 | UI-09 | Phase 2 | Complete |
@@ -126,11 +126,13 @@
 
 **Coverage:**
 - v1 requirements: 30 total
-- Phase 1: 15 requirements (INFRA, INGEST-01/02/04/05, GEO, DETECT)
-- Phase 2: 9 requirements (UI)
+- Phase 1: 15 requirements (INFRA, INGEST-01/02/04/05, GEO, DETECT-01/02/04)
+- Phase 2: 8 requirements (UI-01/02/03/04/05/07/08/09)
 - Phase 3: 6 requirements (INGEST-03, INTUNE, EXPORT)
+- Phase 4: 2 requirements (DETECT-03, UI-06) — gap closure
 - Mapped to phases: 30
 - Unmapped: 0
+- Pending (gap closure): 2 (DETECT-03, UI-06)
 
 ---
 *Requirements defined: 2026-03-19*

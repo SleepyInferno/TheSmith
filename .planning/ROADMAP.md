@@ -66,13 +66,35 @@ Plans:
 - [x] 03-01-PLAN.md — IntuneParser module: Intune CSV parsing (both Graph API and Admin Center formats), UPN-based device correlation, server endpoint, and Pester tests
 - [x] 03-02-PLAN.md — Intune upload UI, device/compliance columns in tables, compliance badges, CSV export button, and visual verification
 
+### Phase 4: Fix POP3 Legacy Protocol Detection
+**Goal:** POP3 sign-ins from foreign IPs are correctly flagged as legacy/high-risk — `isLegacyAuth=true` — and receive the amber visual treatment in the UI
+**Requirements:** DETECT-03, UI-06
+**Gap Closure:** Closes gaps from v1.0 audit — DETECT-03 partial (POP3 not matched by exact 'POP' check), UI-06 partial (badge not shown for POP3 events)
+**Plans:** 1 plan
+
+Plans:
+- [ ] 04-01-PLAN.md — Add POP3, IMAP4, Authenticated SMTP to LegacyProtocols array with TDD tests
+
+### Phase 5: Fix Date-Range Filter for Timezone Offsets
+**Goal:** The all-events date-range filter produces correct results for sign-in timestamps that carry timezone offsets (e.g. `-04:00`), including events near day boundaries
+**Requirements:** UI-08 (edge case)
+**Gap Closure:** Closes date-range filter flow gap from v1.0 audit — string comparison of offset timestamps against Z-sentinel unreliable near midnight
+
+### Phase 6: Wire Saved-Results and User Filter Dropdown
+**Goal:** Admins can reload previously saved result files without re-uploading, and can filter the events table by a specific user via a dedicated dropdown control (not just freetext)
+**Requirements:** (no new requirements — integration polish and UI enhancement)
+**Gap Closure:** Closes two integration gaps from v1.0 audit — GET /saved-results endpoint unreachable, no dedicated user filter control
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Server, Parsing, and Detection Engine | 4/4 | Complete | 2026-03-19 |
 | 2. Web UI and Dashboard | 3/3 | Complete | 2026-03-19 |
 | 3. Intune Integration and Export | 2/2 | Complete   | 2026-03-19 |
+| 4. Fix POP3 Legacy Protocol Detection | 0/1 | Planned | — |
+| 5. Fix Date-Range Filter for Timezone Offsets | 0/0 | Pending | — |
+| 6. Wire Saved-Results and User Filter Dropdown | 0/0 | Pending | — |

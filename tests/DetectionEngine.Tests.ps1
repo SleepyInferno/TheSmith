@@ -28,6 +28,18 @@ Describe 'Test-LegacyProtocol' {
         Test-LegacyProtocol -ClientApp 'MAPI' | Should -BeTrue
     }
 
+    It 'Returns $true for POP3' {
+        Test-LegacyProtocol -ClientApp 'POP3' | Should -BeTrue
+    }
+
+    It 'Returns $true for IMAP4' {
+        Test-LegacyProtocol -ClientApp 'IMAP4' | Should -BeTrue
+    }
+
+    It 'Returns $true for Authenticated SMTP' {
+        Test-LegacyProtocol -ClientApp 'Authenticated SMTP' | Should -BeTrue
+    }
+
     It 'Returns $false for Browser' {
         Test-LegacyProtocol -ClientApp 'Browser' | Should -BeFalse
     }
@@ -334,6 +346,21 @@ Describe 'Invoke-DetectionEngine' -Tag 'Legacy' {
                 locationCity            = 'Moscow'
                 locationCountryOrRegion = 'RU'
                 riskLevel               = 'none'
+            },
+            [PSCustomObject]@{
+                userPrincipalName       = 'pop3-user@contoso.com'
+                userDisplayName         = 'POP3 User'
+                ipAddress               = '198.51.100.5'
+                createdDateTime         = '2026-03-18T10:00:00Z'
+                appDisplayName          = 'Exchange Online'
+                clientAppUsed           = 'POP3'
+                correlationId           = 'leg-003'
+                signInStatus            = 'Success'
+                errorCode               = 0
+                failureReason           = $null
+                locationCity            = 'Moscow'
+                locationCountryOrRegion = 'RU'
+                riskLevel               = 'high'
             }
         )
 
@@ -343,6 +370,11 @@ Describe 'Invoke-DetectionEngine' -Tag 'Legacy' {
     It 'Sets isLegacyAuth to $true for IMAP client' {
         $imapRecord = $script:LegacyResult.results | Where-Object { $_.clientAppUsed -eq 'IMAP' }
         $imapRecord.isLegacyAuth | Should -BeTrue
+    }
+
+    It 'Sets isLegacyAuth to $true for POP3 client' {
+        $pop3Record = $script:LegacyResult.results | Where-Object { $_.clientAppUsed -eq 'POP3' }
+        $pop3Record.isLegacyAuth | Should -BeTrue
     }
 
     It 'Sets isLegacyAuth to $false for Browser client' {
